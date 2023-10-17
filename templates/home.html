@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <style>
+        body {
+            background-color: #eee;
+        }
+
+        .web-name {
+            font-weight: bold;
+            background: linear-gradient(to right, #fda02d, #f51e3b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .social-link {
+            width: 30px;
+            height: 30px;
+            outline: 1px solid #d8363a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            border-radius: 50%;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .social-link:hover {
+            text-decoration: none;
+            color: whitesmoke !important;
+            background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593) !important;
+            background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593) !important;
+        }
+
+        .btn {
+            border-radius: 32px !important;
+            padding: 4px 12px !important;
+            transition: all 0.3s;
+            border: none !important;
+            color: #666 !important;
+            outline: 1px solid #d8363a !important;
+        }
+
+        .btn:hover {
+            color: whitesmoke !important;
+            background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593) !important;
+            background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593) !important;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <nav class="navbar bg-body-tertiary ">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center p-1" href="/">
+                {% load static %}
+                <img src="{% static '/logo.webp.png' %}" alt="Logo" width="60" height="50"
+                    class="d-inline-block align-text-top">
+                <span class="web-name px-3">Friends Meetup</span>
+
+            </a>
+            <div class="d-flex justify-content-center">
+                <a class="me-4 d-none d-md-block text-black text-decoration-none">
+                    <i class="bi bi-person"></i>
+                    Welcome, {{logged_user.full_name}} @{{logged_user.username}}
+                </a>
+                <a class="icon-link me-4" href="{% url 'logout' %}">
+                    <i class="bi bi-box-arrow-left"></i>
+                    Log out
+                </a>
+            </div>
+
+        </div>
+    </nav>
+    <div style="background-color: #eee; min-height: 100vh;">
+
+        <div class="container py-3">
+
+            <div class="col col-md-9 col-lg-7 col-xl-5">
+                <div class="card" style="border-radius: 15px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex text-black">
+                            <div class="flex-shrink-0" style="width: 180px; height: 180px;">
+                                <img 
+                                    src="{{'media/'}}{{ MEDIA_URL }}{{logged_user.picture_path }}"
+                                    alt="No Image" class="img-fluid"
+                                    style="width: 100%; height: 100%; border-radius: 10px;">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-1">{{logged_user.full_name}}</h5>
+                                <p class="mb-2 pb-1" style="color: #2b2a2a;">@{{logged_user.username}}</p>
+                                <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
+                                    style="background-color: #efefef;">
+                                    <div>
+                                        <p class="small text-muted mb-1">Friends</p>
+                                        <p class="mb-0">{{ logged_user.friends.count }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex pt-1">
+                                    <a href="/profile"><button type="button"
+                                            class="btn btn-outline-primary me-1 flex-grow-1">View
+                                            profile</button></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mt-5 mb-2">Nearby users</h5>
+
+            <div class="row">
+                {% for user in app_users %}
+
+                <!-- User Card item start-->
+                <div class="col-xl-3 col-sm-6 mb-5 text-center">
+                    <div class="bg-white rounded shadow-sm py-5 px-4">
+                        <div style="width: 100px; height: 100px;" class="d-inline-block">
+                            {% if user.picture_path %}
+                            <img style="width: 100%; height: 100%;"
+                                src="{{'media/'}}{{ MEDIA_URL }}{{user.picture_path }}" alt="Profile Pic"
+                                class="img-fluid rounded-circle mb-3 shadow-sm">
+                            {% else %}
+                            <h1 style="width: 100%; height: 100%;" class=" img-fluid rounded-circle mb-3 shadow-sm d-flex align-items-center justify-content-center"><i class="bi bi-person"></i></h1>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="mb-0 overflow-hidden">{{user.full_name}}</h5>
+                        <span class="small text-muted">
+                            @{{user.username}}</span>
+                        <ul class="social mb-0 list-inline mt-3">
+                            <li onclick="addFriend( '{{user.id}}' )" class="list-inline-item">
+                                <button class="btn"><i class="bi bi-plus"></i> Add Friend</button>
+                            </li>
+                            <li onclick="showUserProfile('{{user.full_name}}', '{{user.username}}', '{{user.picture_path}}', '{{user.gender}}', '{{user.email}}')" class="list-inline-item"><a href="#"
+                                    class="social-link"><i class="bi bi-info"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- User Card item  End -->
+
+                {% endfor %}
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card" style="border-radius: 15px;">
+                                <div class="card-body p-4">
+                                    <div class="d-flex text-black">
+                                        <div class="flex-shrink-0" style="width: 180px; height: 180px;">
+                                            <img id="nearbyPic"
+                                                alt="No Image" class="img-fluid"
+                                                style="width: 100%; height: 100%; border-radius: 10px;">
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h5 class="mb-1" id="nearbyName"></h5>
+                                            <p class="mb-2 pb-1" style="color: #2b2a2a;" id="nearbyUsername"></p>
+                                            <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
+                                                style="background-color: #efefef;">
+                                                <div>
+                                                    <p class="small text-muted mb-1">Gender</p>
+                                                    <p class="mb-0" id="nearbyGender"></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
+                                                style="background-color: #efefef;">
+                                                <div>
+                                                    <p class="small text-muted mb-1">Email</p>
+                                                    <p class="mb-0" id="nearbyEmail"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+<script>
+    const csrfToken = "{{ csrf_token }}";
+    const addFriend = async (userId) => {
+        console.log(userId);
+        const url = '/add_friend/';
+        const data = { user_id: userId };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const result = await response.json();
+            console.log(result);
+            if (result.success) {
+                alert("User added to your friend list!");
+                window.location.reload();
+            } else {
+                alert("Failed to add user to your friend list.");
+            }
+
+        } catch (error) {
+            alert("An error occurred while adding the user to your friend list.");
+            console.error(error);
+        }
+    }
+
+    const showUserProfile = (fullName, username, picturePath, gender, email) => {
+        $('#nearbyPic').attr('src', 'media/'+picturePath);
+        $('#nearbyName').text(fullName);
+        $('#nearbyUsername').text('@'+username);
+        $('#nearbyEmail').text(email);
+
+        let userGender = 'Unknown';
+        if (gender == 'M') userGender = 'Male'
+        else if(gender == 'F') userGender = 'Female'
+        $('#nearbyGender').text(userGender);
+
+        $('#exampleModal').modal('show');
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+</html>
